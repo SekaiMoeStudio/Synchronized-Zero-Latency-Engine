@@ -15,12 +15,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/inotify.h> 
 using namespace std;
 
 #define CORE_COUNT 8
-
 class Utils{
-public:
+protected:
     const char * logpath = "/storage/emulated/0/Android/SZE_NEXT/log.txt";
 
 public:
@@ -36,22 +36,17 @@ public:
         }
     }
 
-    void Writer(const char* path, int con){
-        FILE* file = fopen(path, "w");
+    void Writer(const string path, int con){
+        FILE* file = fopen(path.c_str(), "w");
         if (!file)
         {
-            chmod(path,0666);
-            file = fopen(path, "w");
+            chmod(path.c_str(),0666);
+            file = fopen(path.c_str(), "w");
         }
         
         int ce = fprintf(file, "%d", con);
-        
-        if (ce < 0)
-        {
-            log("Writer函数无法正常写入");
-        }
         fclose(file);
-        chmod(path,0444);
+        chmod(path.c_str(),0444);
     }
 
     void clearLog() {
@@ -63,20 +58,15 @@ public:
         }
     }
 
-    void Writer(const char* path, const char* str) {
-        FILE* file = fopen(path, "w");
+    void Writer(const string path, const string str) {
+        FILE* file = fopen(path.c_str(), "w");
         if (!file) {
-            chmod(path, 0666);
-            file = fopen(path, "w");
+            chmod(path.c_str(), 0666);
+            file = fopen(path.c_str(), "w");
         }
-        int result = fprintf(file, "%s", str);
-    
-        if (result < 0) {
-            log("Writer函数无法正常写入");
-        }
-    
+        int result = fprintf(file, "%s", str.c_str());
         fclose(file);
-        chmod(path, 0444);
+        chmod(path.c_str(), 0444);
     }
 
     std::vector<std::vector<long>> readCpuStats() {
